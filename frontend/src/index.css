@@ -170,6 +170,39 @@ body {
   border-color: var(--bg-border-hover);
   background: rgba(255, 255, 255, 0.05);
 }
+.btn-premium:disabled,
+.btn-ghost:disabled,
+.scenario-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.scenario-select {
+  min-width: 188px;
+  appearance: none;
+  color-scheme: dark;
+  border: 1px solid var(--bg-border);
+  border-radius: 10px;
+  padding: 9px 32px 9px 12px;
+  color: var(--text-main);
+  background-color: var(--bg-inset);
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 14px, calc(100% - 11px) 14px;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  font-size: 10px;
+  cursor: pointer;
+  transition: border-color 0.3s var(--bezier-out), background-color 0.3s var(--bezier-out);
+}
+.scenario-select:hover,
+.scenario-select:focus-visible {
+  border-color: var(--bg-border-hover);
+  background-color: var(--bg-surface-hover);
+}
+.scenario-select option {
+  color: var(--text-main);
+  background: var(--bg-surface);
+}
 
 /* ---------- animated criss-cross backdrop ---------- */
 .bg-criss-cross {

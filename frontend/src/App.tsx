@@ -108,7 +108,7 @@ export default function App() {
           </div>
           <div className="animate-entrance stagger-6 min-h-[260px] flex">
             <div className="flex-1 flex">
-              <FFTSpectrum alerts={feed.alerts} />
+              <FFTSpectrum alerts={feed.alerts} temporal={feed.temporal} />
             </div>
           </div>
           <div className="animate-entrance stagger-7 min-h-[260px] flex">

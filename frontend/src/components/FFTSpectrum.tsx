@@ -1,55 +1,52 @@
 import { useMemo } from "react";
-import { Area, AreaChart, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Radio } from "lucide-react";
-import type { Alert } from "../types/alert";
+import type { Alert, TemporalSummary } from "../types/alert";
 
-// Visualizes the C2 detector's FFT branch: Inter-Arrival-Time periodicity
-// in frequency space. A real beacon shows a sharp dominant peak; human
-// browsing is flat/noisy. Derived from the active C2 alert's interval.
-export default function FFTSpectrum({ alerts }: { alerts: Alert[] }) {
-  const c2 = useMemo(() => alerts.find((a) => a.threatType === "C2 Beacon" && a.beaconInterval), [alerts]);
+type Props = { alerts: Alert[]; temporal: TemporalSummary | null };
+
+export default function FFTSpectrum({ alerts, temporal }: Props) {
+  const c2 = useMemo(() => alerts.find((alert) => alert.threatType === "C2 Beacon" && alert.beaconInterval), [alerts]);
   const interval = c2?.beaconInterval ?? null;
   const domFreq = interval ? 1 / interval : null;
+  const c2Cv = c2?.indicators.find((indicator) => /inter-arrival cv/i.test(indicator))?.match(/([\d.]+)$/)?.[1];
+  const periodicityCv = c2Cv == null ? temporal?.temporal_features?.inter_arrival_cv ?? 0 : Number(c2Cv);
+  const eventCount = temporal?.total_events_observed ?? alerts.length;
+  const c2Alerts = temporal?.alert_classes?.["C2 Beacon"] ?? alerts.filter((alert) => alert.threatType === "C2 Beacon").length;
 
   const spectrum = useMemo(() => {
-    const N = 60;
-    const maxF = 0.05; // Hz (period ≥ 20s)
-    return Array.from({ length: N }, (_, i) => {
-      const f = (i / (N - 1)) * maxF;
-      let mag = 0.06 + Math.random() * 0.05; // noise floor
+    const pointCount = 60;
+    const maxFrequency = 0.05;
+    return Array.from({ length: pointCount }, (_, index) => {
+      const frequency = (index / (pointCount - 1)) * maxFrequency;
+      const noise = 0.025 + ((Math.sin((index + eventCount) * 1.71) + 1) / 2) * 0.03;
+      let magnitude = noise;
       if (domFreq) {
-        const peak = Math.exp(-(((f - domFreq) / 0.0016) ** 2)); // fundamental
-        const harm = 0.35 * Math.exp(-(((f - domFreq * 2) / 0.0016) ** 2)); // 2nd harmonic
-        mag = Math.max(mag, peak + harm);
+        const peakStrength = Math.min(1, Math.max(0.2, 1 - periodicityCv));
+        const fundamental = peakStrength * Math.exp(-(((frequency - domFreq) / 0.0016) ** 2));
+        const harmonic = 0.35 * peakStrength * Math.exp(-(((frequency - domFreq * 2) / 0.0016) ** 2));
+        magnitude = Math.max(magnitude, fundamental + harmonic);
       }
-      return { f: +f.toFixed(4), mag: +mag.toFixed(3) };
+      return { frequency: +frequency.toFixed(4), magnitude: +magnitude.toFixed(3) };
     });
-  }, [domFreq]);
+  }, [domFreq, eventCount, periodicityCv]);
 
   return (
     <section className="panel-base flex flex-col overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--bg-border)]">
+      <div className="flex items-center justify-between border-b border-[var(--bg-border)] px-4 py-3">
         <div className="flex items-center gap-2">
           <Radio size={14} className="text-[var(--text-muted)]" />
           <h2 className="text-[13px] font-semibold">C2 Beacon Spectrum</h2>
-          <span className="label-mono text-[9px] text-[var(--text-dim)]">FFT branch</span>
+          <span className="label-mono text-[9px] text-[var(--text-dim)]">metadata FFT</span>
         </div>
-        {interval && (
-          <div className="text-right">
-            <span className="mono text-[13px]" style={{ color: "var(--sev-high)" }}>
-              {interval}s
-            </span>
-            <span className="label-mono text-[8px] ml-1">interval</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {eventCount > 0 && <span className="label-mono text-[8px] text-[var(--sev-low)]">LIVE</span>}
+          {interval && <span className="mono text-[13px] text-[var(--sev-high)]">{interval.toFixed(1)}s</span>}
+        </div>
       </div>
 
-      <div className="flex-1 min-h-[120px] px-1 pt-2 relative">
-        {!interval && (
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <p className="label-mono text-[9px] text-[var(--text-dim)]">No periodicity detected — noise floor</p>
-          </div>
-        )}
+      <div className="relative min-h-[120px] flex-1 px-1 pt-2">
+        {!interval && <div className="absolute inset-0 z-10 flex items-center justify-center"><p className="label-mono text-[9px] text-[var(--text-dim)]">No C2 periodicity in current window</p></div>}
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={spectrum} margin={{ top: 8, right: 10, bottom: 4, left: 0 }}>
             <defs>
@@ -58,48 +55,28 @@ export default function FFTSpectrum({ alerts }: { alerts: Alert[] }) {
                 <stop offset="100%" stopColor="#f97316" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="f" hide />
+            <XAxis dataKey="frequency" hide />
             <YAxis hide domain={[0, 1.2]} />
-            {domFreq && (
-              <ReferenceLine
-                x={+domFreq.toFixed(4)}
-                stroke="#f97316"
-                strokeDasharray="3 3"
-                label={{
-                  value: `${domFreq.toFixed(4)} Hz`,
-                  position: "top",
-                  fill: "#f97316",
-                  fontSize: 9,
-                  fontFamily: "JetBrains Mono, monospace",
-                }}
-              />
-            )}
-            <Area
-              type="monotone"
-              dataKey="mag"
-              stroke={interval ? "#f97316" : "#444"}
-              strokeWidth={1.4}
-              fill="url(#fftFill)"
-              isAnimationActive={false}
+            <Tooltip
+              contentStyle={{ background: "#0d1728", border: "1px solid rgba(179,202,230,.2)", borderRadius: 8, fontSize: 10 }}
+              formatter={(value) => [`${Number(value).toFixed(3)} magnitude`, "signal"] as [string, string]}
+              labelFormatter={(value) => `${Number(value).toFixed(4)} Hz`}
             />
+            {domFreq && <ReferenceLine x={+domFreq.toFixed(4)} stroke="#f97316" strokeDasharray="3 3" label={{ value: `${domFreq.toFixed(4)} Hz`, position: "top", fill: "#f97316", fontSize: 9, fontFamily: "JetBrains Mono, monospace" }} />}
+            <Area type="monotone" dataKey="magnitude" stroke={interval ? "#f97316" : "#526176"} strokeWidth={1.4} fill="url(#fftFill)" isAnimationActive={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="grid grid-cols-3 gap-px bg-[var(--bg-border)] border-t border-[var(--bg-border)]">
-        <Stat label="Dom. freq" value={domFreq ? `${domFreq.toFixed(4)}` : "—"} />
-        <Stat label="Spectral H" value={interval ? "0.19" : "—"} />
-        <Stat label="Peak prom." value={interval ? "0.88" : "—"} />
+      <div className="grid grid-cols-3 gap-px border-t border-[var(--bg-border)] bg-[var(--bg-border)]">
+        <Stat label="Dominant Hz" value={domFreq ? domFreq.toFixed(4) : "none"} />
+        <Stat label="IAT CV" value={interval ? periodicityCv.toFixed(3) : "none"} />
+        <Stat label="C2 alerts" value={c2Alerts.toLocaleString()} />
       </div>
     </section>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-[var(--bg-surface)] px-3 py-2">
-      <div className="label-mono text-[7.5px]">{label}</div>
-      <div className="mono text-[11px] mt-0.5">{value}</div>
-    </div>
-  );
+  return <div className="bg-[var(--bg-surface)] px-3 py-2"><div className="label-mono text-[7.5px]">{label}</div><div className="mono mt-0.5 text-[11px]">{value}</div></div>;
 }

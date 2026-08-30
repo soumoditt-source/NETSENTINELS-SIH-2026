@@ -127,7 +127,7 @@ export default function ExplainMode({ feed, onInspect }: Props) {
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {Object.entries(feed.training.rowCounts ?? {}).map(([split, count]) => <span key={split} className="rounded border border-[var(--bg-border)] px-2 py-1">{split}: {count.toLocaleString()}</span>)}
-            {Object.entries(feed.training.labelDistribution ?? {}).slice(0, 6).map(([label, count]) => <span key={label} className="rounded border border-[var(--bg-border)] px-2 py-1">{label}: {count.toLocaleString()}</span>)}
+            {formatLabelDistribution(feed.training.labelDistribution).map(([label, count]) => <span key={label} className="rounded border border-[var(--bg-border)] px-2 py-1">{label}: {count.toLocaleString()}</span>)}
           </div>
         </section>
       )}
@@ -155,6 +155,13 @@ export default function ExplainMode({ feed, onInspect }: Props) {
       </section>
     </div>
   );
+}
+
+function formatLabelDistribution(distribution: TrainingSummary["labelDistribution"]): [string, number][] {
+  return Object.entries(distribution ?? {}).flatMap(([split, values]) => {
+    if (typeof values === "number") return [[split, values]];
+    return Object.entries(values).map(([label, count]) => [`${split}/${label}`, count] as [string, number]);
+  }).slice(0, 8);
 }
 
 function SituationCard({ icon, label, value, detail }: { icon: ReactNode; label: string; value: string; detail: string }) {

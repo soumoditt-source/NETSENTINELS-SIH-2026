@@ -71,7 +71,7 @@ export interface TrainingSummary {
   splitMethod?: string;
   trainingRunId?: string;
   rowCounts?: Record<string, number>;
-  labelDistribution?: Record<string, number>;
+  labelDistribution?: Record<string, number | Record<string, number>>;
   limitations: string[];
 }
 

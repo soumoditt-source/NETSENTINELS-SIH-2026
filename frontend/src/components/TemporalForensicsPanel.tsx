@@ -6,6 +6,8 @@ import type { TemporalSummary } from "../types/alert";
 export default function TemporalForensicsPanel({ summary }: { summary: TemporalSummary | null }) {
   const features = summary?.temporal_features;
   const timeline = summary?.timeline ?? [];
+  const hasTelemetry = (summary?.events_in_window ?? 0) > 0;
+  const updatedAt = summary?.last_event_at ? new Date(summary.last_event_at * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "awaiting";
   const protocols = Object.entries(summary?.protocols ?? {}).slice(0, 4);
   const ports = summary?.top_ports?.slice(0, 5) ?? [];
 
@@ -26,10 +28,11 @@ export default function TemporalForensicsPanel({ summary }: { summary: TemporalS
         <div>
           <div className="mb-2 flex items-center justify-between">
             <span className="label-mono">Flow volume by time bucket</span>
+            <span className="mono text-[10px] text-[var(--text-dim)]">updated {updatedAt}</span>
             <span className="mono text-[10px] text-[var(--text-dim)]">{summary?.events_in_window ?? 0} events</span>
           </div>
           <div className="h-[170px] rounded-xl border border-[var(--bg-border)] bg-[var(--bg-inset)] px-2 py-3">
-            {timeline.length === 0 ? (
+            {!hasTelemetry || timeline.length === 0 ? (
               <div className="flex h-full items-center justify-center label-mono text-[9px] text-[var(--text-dim)]">Awaiting telemetry window…</div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">

@@ -21,7 +21,7 @@ export default function DataEvidencePanel({ training }: { training: TrainingSumm
   const [scenario, setScenario] = useState("mixed_enterprise");
   const rows = training?.rowCounts ?? {};
   const totalRows = Object.values(rows).reduce((sum, count) => sum + count, 0);
-  const labels = Object.entries(training?.labelDistribution ?? {}).slice(0, 4);
+  const labels = Object.entries(rows).slice(0, 4);
 
   async function launchAnalysis() {
     setReplayBusy(true);
@@ -76,7 +76,7 @@ export default function DataEvidencePanel({ training }: { training: TrainingSumm
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <span className="label-mono mr-1">provenance first</span>
-          <select className="rounded border border-[var(--bg-border)] bg-[var(--bg-panel)] px-2.5 py-2 text-[10px] text-[var(--text-main)]" value={scenario} onChange={(event) => setScenario(event.target.value)} disabled={replayBusy} aria-label="Safe analysis scenario">
+          <select className="scenario-select" value={scenario} onChange={(event) => setScenario(event.target.value)} disabled={replayBusy} aria-label="Safe analysis scenario">
             {SAFE_SCENARIOS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
           <button className="btn-premium !px-3 !py-2 !text-[10px]" onClick={launchAnalysis} disabled={replayBusy}>

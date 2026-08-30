@@ -76,16 +76,23 @@ function initialState(): FeedState {
  *   - sourceCoords/destCoords: [lat, lng] tuples
  */
 function parseBackendAlert(raw: any): Alert {
+  const evidence = raw.evidence ?? raw.feature_snapshot ?? {};
+  const supportingEvidence = Array.isArray(raw.supporting_evidence)
+    ? raw.supporting_evidence.filter((item: unknown): item is string => typeof item === "string")
+    : [];
+  const beaconMatch = supportingEvidence.join(" ").match(/mean\s+([\d.]+)s/i);
+  const beaconInterval = typeof evidence.beacon_interval === "number"
+    ? evidence.beacon_interval
+    : beaconMatch ? Number(beaconMatch[1]) : undefined;
   // Transform evidence dict → human-readable indicators array
-  const indicators: string[] = [];
-  if (raw.evidence) {
-    if (raw.evidence.pps) indicators.push(`${raw.evidence.pps.toLocaleString()} pps`);
-    if (raw.evidence.avg_pkt_size) indicators.push(`Avg packet size: ${raw.evidence.avg_pkt_size} bytes`);
-    if (raw.evidence.syn_ack_ratio !== undefined) indicators.push(`SYN/ACK ratio: ${raw.evidence.syn_ack_ratio.toFixed(2)}`);
-    if (raw.evidence.beacon_interval) indicators.push(`Beacon interval: ${raw.evidence.beacon_interval}s`);
-    if (raw.evidence.entropy) indicators.push(`Entropy: ${raw.evidence.entropy.toFixed(2)}`);
-    if (raw.evidence.domain) indicators.push(`Domain: ${raw.evidence.domain}`);
-    // Add more evidence field mappings as backend evolves
+  const indicators: string[] = [...supportingEvidence.slice(0, 4)];
+  if (indicators.length === 0) {
+    if (evidence.pps) indicators.push(`${evidence.pps.toLocaleString()} pps`);
+    if (evidence.flow_packets_per_second) indicators.push(`${Math.round(evidence.flow_packets_per_second).toLocaleString()} packets/s`);
+    if (evidence.avg_pkt_size) indicators.push(`Avg packet size: ${evidence.avg_pkt_size} bytes`);
+    if (evidence.syn_ack_ratio !== undefined) indicators.push(`SYN/ACK ratio: ${Number(evidence.syn_ack_ratio).toFixed(2)}`);
+    if (beaconInterval) indicators.push(`Beacon interval: ${beaconInterval.toFixed(1)}s`);
+    if (evidence.entropy) indicators.push(`Entropy: ${Number(evidence.entropy).toFixed(2)}`);
   }
 
   // Fallback indicators if evidence is empty
@@ -100,13 +107,13 @@ function parseBackendAlert(raw: any): Alert {
     severity: raw.severity.toLowerCase() as Severity,
     sourceIP: raw.source_ip,
     destIP: raw.dest_ip,
-    domain: raw.evidence?.domain,
+    domain: evidence.domain ?? raw.flow_meta?.domain,
     confidence: Math.round(raw.confidence * 1000) / 10, // 0.9937 → 99.4
     mitreTechnique: raw.mitre?.technique,
     mitreTactic: raw.mitre?.tactic,
     model: raw.model_name as Alert["model"],
     indicators,
-    beaconInterval: raw.evidence?.beacon_interval,
+    beaconInterval,
     responseScope: raw.containment_scope?.scope_type,
     responseAction: raw.containment_scope?.recommended_action,
     // Transform geo object → coordinate tuples for 3D graph
@@ -168,7 +175,7 @@ export function useThreatFeed(): FeedState {
         split_method?: string;
         training_run_id?: string;
         row_counts?: Record<string, number>;
-        label_distribution?: Record<string, number>;
+        label_distribution?: TrainingSummary["labelDistribution"];
         metrics?: { test?: { f1?: number; roc_auc?: number } };
       }) => {
         setState((prev) => ({
