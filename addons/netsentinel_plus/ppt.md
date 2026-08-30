@@ -1,8 +1,7 @@
 # NetSentinel — SIH 2026 Presentation Blueprint
 
-**Problem Statement:** 26145 — AI-Based Detection of Cyber Threats in
-Unidirectional IP Traffic  
-**Team:** Soumdoitya Das and Team NetSentinels  
+**Problem Statement:** 26145 — AI-Based Detection of Cyber Threats in Unidirectional IP Traffic
+**Team:** Soumdoitya Das and Team NetSentinels
 **Format:** 12-minute presentation + 3-minute controlled demonstration
 
 This is a judge-facing writing and visual plan. Replace every bracketed image
@@ -231,10 +230,8 @@ per card.
 
 **Write:**
 
-**Now:** local replay, PCAP/Zeek adapters, bounded streaming state, hybrid
-detectors, dashboard, audit report.  
-**Next:** independent temporal holdouts, calibration, per-site baselines,
-signed model registry, role-based access, and production observability.  
+**Now:** local replay, PCAP/Zeek adapters, bounded streaming state, hybrid detectors, dashboard, audit report.
+**Next:** independent temporal holdouts, calibration, per-site baselines, signed model registry, role-based access, and production observability.
 **Never:** inline blocking, active probing, payload decryption, or malware
 execution in the monitoring enclave.
 
@@ -283,4 +280,3 @@ readiness frame, not an official SIH scoring formula.
 - Keep the original dashboard and the additive console visibly separate.
 - Show one alert from evidence to action scope in under 45 seconds.
 - End with the read-only guarantee and the next validation milestone.
-
