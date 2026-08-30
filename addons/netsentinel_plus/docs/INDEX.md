@@ -30,4 +30,3 @@ Mistral is an optional explanation layer. None is required for the local
 detector, and none can modify its score. No provider integration accepts files,
 downloads samples, executes content, decrypts payloads, probes targets, or
 sends blocking commands.
-
