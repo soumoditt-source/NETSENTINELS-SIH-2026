@@ -37,6 +37,11 @@ Or use the new root launcher:
 .\launch_netsentinel_plus.bat
 ```
 
+For provider enrichment, revoke any credentials exposed outside your local
+machine and create `addons/netsentinel_plus/.env.local` using
+`KEY_SETUP.md`. That file is ignored by Git. The sidecar remains fully usable
+without provider keys in offline-safe mode.
+
 Open `http://127.0.0.1:8200`. The existing dashboard remains at
 `http://127.0.0.1:5174` and the existing API remains at `http://127.0.0.1:8100`.
 
@@ -54,3 +59,7 @@ All credentials are read from environment variables and are never returned by
 the status endpoint. Provider results are advisory; local detector output is
 the authoritative decision.
 
+The VirusTotal public API is restricted to metadata/hash lookups in this
+sidecar; no executable is uploaded or downloaded. Mistral is used only for a
+bounded analyst brief from redacted structured evidence. External provider
+outages or rate limits never change the local detector score.

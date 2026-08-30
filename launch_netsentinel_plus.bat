@@ -3,6 +3,12 @@ setlocal
 cd /d "%~dp0"
 set "NETSENTINEL_BACKEND_URL=http://127.0.0.1:8100"
 set "NETSENTINEL_PLUS_PORT=8200"
+if exist "addons\netsentinel_plus\.env.local" (
+  for /f "usebackq eol=# tokens=1,* delims==" %%A in ("addons\netsentinel_plus\.env.local") do if not "%%A"=="" set "%%A=%%B"
+  echo Local provider configuration loaded from addons\netsentinel_plus\.env.local
+) else (
+  echo No local provider keys loaded; sidecar will run in offline-safe mode.
+)
 echo.
 echo ============================================================
 echo   NetSentinel Plus - additive analyst sidecar
