@@ -215,6 +215,12 @@ through the existing API and retain the chain of custody.
 # Full judge launch, scorecard, services, and strict gate
 .\launch_netsentinel_all.bat
 
+# Manual PowerShell launch with scorecard, all API health checks, and no browser
+.\launch_manual.ps1
+
+# Manual launch and open both dashboards
+.\launch_manual.ps1 -OpenBrowser
+
 # Strict gate only, with the services already running
 python tools\verify_final.py
 
@@ -231,6 +237,9 @@ npm run build --prefix frontend
 The repository's broader legacy tests include optional PCAP dependencies and
 one environment-dependent endpoint smoke test. The focused release gate above
 is the reproducible verification path for this additive release.
+
+The manual launcher prints calibration error as an advisory quality metric; it
+does not confuse calibration with service health or make it a false failure.
 
 ## 11. API surface
 

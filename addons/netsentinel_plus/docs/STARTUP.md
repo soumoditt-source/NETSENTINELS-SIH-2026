@@ -12,6 +12,19 @@ Set-Location "D:\PORT SCANNING CYS IP FLOW\testing-main"
 .\launch_netsentinel_all.bat
 ```
 
+For one visible PowerShell workflow that starts or reuses the backend,
+dashboard, and Plus API, prints the measured scorecard, checks every API, and
+does not treat calibration as a service failure, run:
+
+```powershell
+.\launch_manual.ps1
+```
+
+Use `.\launch_manual.ps1 -OpenBrowser` when both local dashboards should open
+automatically. The script reads accuracy, precision, recall, F1, latency, and
+calibration from the generated launch report; it never invents or raises a
+score to meet a target.
+
 The launcher runs the measured audit, starts or reuses the original backend on
 `8100`, starts or reuses the original dashboard on `5174`, then starts the
 additive analyst console on `8200`.
