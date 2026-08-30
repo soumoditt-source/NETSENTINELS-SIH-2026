@@ -35,6 +35,8 @@ type LaunchReport = {
   };
 };
 
+const SPLIT_ORDER = ["train", "validation", "test"] as const;
+
 export default function LaunchTelemetryPanel({ liveEvents = 0 }: { liveEvents?: number }) {
   const [report, setReport] = useState<LaunchReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,12 +119,45 @@ export default function LaunchTelemetryPanel({ liveEvents = 0 }: { liveEvents?: 
           </div>
         </div>
       </div>
+      <section className="border-t border-[var(--bg-border)] px-5 py-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="label-mono">Complete measured scorecard</p>
+            <h3 className="mt-1 text-sm font-semibold">Every prepared split, same binary 0/1 contract</h3>
+          </div>
+          <span className="text-[10px] text-[var(--text-dim)]">No score is rounded up to meet a target</span>
+        </div>
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          {SPLIT_ORDER.map((split) => <SplitCard key={split} name={split} metrics={report?.real_data?.splits?.[split]} />)}
+        </div>
+      </section>
       <div className="flex items-center gap-2 border-t border-[var(--bg-border)] px-5 py-3 text-[10px] text-[var(--text-dim)]">
         <CheckCircle2 size={13} className="text-[var(--sev-low)]" />
         {loading ? "Reading the latest launch audit..." : "Scores are dataset/scenario-specific; they are not a universal malware-detection rate."}
         <RefreshCw size={12} className="ml-auto" />
       </div>
     </section>
+  );
+}
+
+function SplitCard({ name, metrics }: { name: string; metrics?: BinaryMetrics }) {
+  const values: [string, string][] = [
+    ["Accuracy", percent(metrics?.accuracy)],
+    ["Precision", percent(metrics?.precision)],
+    ["Recall", percent(metrics?.recall)],
+    ["F1", percent(metrics?.f1)],
+    ["ROC-AUC", percent(metrics?.roc_auc)],
+  ];
+  return (
+    <div className="rounded-lg border border-[var(--bg-border)] bg-[var(--bg-base)]/40 p-3">
+      <div className="flex items-center justify-between gap-3">
+        <span className="label-mono text-[9px]">{name}</span>
+        <span className="mono text-[10px] text-[var(--text-dim)]">{metrics?.rows == null ? "not measured" : `${metrics.rows.toLocaleString()} rows`}</span>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
+        {values.map(([label, value]) => <div key={label} className="flex items-center justify-between gap-2 border-b border-[var(--bg-border)] pb-1"><span className="text-[10px] text-[var(--text-dim)]">{label}</span><strong className="mono text-[11px] tabular-nums">{value}</strong></div>)}
+      </div>
+    </div>
   );
 }
 
