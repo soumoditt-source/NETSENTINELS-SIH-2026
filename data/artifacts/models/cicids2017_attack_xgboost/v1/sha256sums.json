@@ -1,0 +1,14 @@
+{
+  "confusion_matrix.csv": "8037d8f5a32ebaaa3865076ce12d39f513f1acbbbd625f0f846fd1b4f7ef3cf0",
+  "feature_importance.csv": "8822833e8724a840ccde61e580cb41817a600e78a3238e262010bc391a542669",
+  "feature_order.json": "6dbc3a8ce5f9e2c69e71ff5abbe719bf2b4035c1a9253f8a5c65d0eb2dca981d",
+  "feature_schema.json": "70ff76219e5474295a2ad4cd65eb0abaa783eb6a0098736460091ccb66154f4c",
+  "known_limitations.md": "4d8018ce4b612688a46c78637b039bff919057778ef343c028f987a96d1ae85e",
+  "label_mapping.json": "0fdd8c9ce7a6a9fcfbbcc9be02e7d77843a8536b8226c57644bdb4e868a99908",
+  "metrics.json": "ac5b55ed7c1e4b8ff76b0244132114702522c6613c5fe590504e038f2bcc38b4",
+  "model.joblib": "6a859946e72d2e041ccfc267e2a1c3e53528f1cc5a422fd5eea0bfd330e2bd4c",
+  "model.json": "4f7efac870063967312277c5ba50e7fd08cadce6235254928b3571da5c9a278a",
+  "model_metadata.json": "1fedb53997483347003d01ee597c590f21d19699d9566689ba47cacc92d8f150",
+  "preprocessing_pipeline.joblib": "f1fa80e73e425871f4c2aa80bf9c672fb1105134325d5c92727dbb6bd7f362d7",
+  "training_manifest.json": "29edfdb54c36261c33e15f65d585b8cff0fb6be8af42417842c5aab2c7223af8"
+}

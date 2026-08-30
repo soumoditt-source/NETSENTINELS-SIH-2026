@@ -1,0 +1,71 @@
+{
+  "scenario": "attack_signatures",
+  "seed": 42,
+  "is_synthetic": true,
+  "offline_only": true,
+  "is_executable": false,
+  "payload_decrypted": false,
+  "metadata_only": true,
+  "supported_upload_formats": [
+    "jsonl",
+    "csv",
+    "parquet"
+  ],
+  "event_count": 449,
+  "created_at_utc": "2026-08-30T08:05:26.761118+00:00",
+  "outputs": {
+    "attack_signatures_42.jsonl": {
+      "sha256": "88e779f84f4d8d8aff43faa59a51676ba0ea3dbcc4e722ef1a554e148bf31707",
+      "size_bytes": 293761
+    },
+    "attack_signatures_42.csv": {
+      "sha256": "d48cf87e957851fbb3ea5dca4ca003b60e0549ff57c0a85d1b35beed973d58d6",
+      "size_bytes": 276164
+    },
+    "attack_signatures_42.parquet": {
+      "sha256": "427341da73799dc11b6b736c3197d610b5b7ef0e245f704d23a9c0a2c7b15e49",
+      "size_bytes": 58385
+    }
+  },
+  "fixture_purpose": "Defensive metadata-only detector and temporal-forensics validation",
+  "test_cases": [
+    "benign_web_browsing",
+    "software_update_hard_negative",
+    "cloud_sync_hard_negative",
+    "normal_messaging_hard_negative",
+    "syn_flood_like",
+    "udp_flood_like",
+    "horizontal_port_scan_like",
+    "vertical_port_scan_like",
+    "low_and_slow_scan_like",
+    "periodic_beacon_like",
+    "dga_dns_like",
+    "dns_tunneling_like",
+    "asymmetric_exfiltration_like",
+    "legitimate_service_c2_chain_like"
+  ],
+  "scenario_counts": {
+    "c2_beaconing": 25,
+    "cloud_sync": 6,
+    "dga_dns": 20,
+    "dns_tunneling": 16,
+    "exfiltration": 4,
+    "horizontal_scan": 40,
+    "legit_service_c2": 18,
+    "normal_messaging": 15,
+    "slow_stealth_scan": 25,
+    "software_update": 4,
+    "syn_flood": 120,
+    "udp_flood": 100,
+    "vertical_scan": 40,
+    "web_browsing": 16
+  },
+  "safety": {
+    "offline_only": true,
+    "is_executable": false,
+    "contains_payload": false,
+    "contains_credentials": false,
+    "uses_documentation_networks": true,
+    "requires_authorized_lab_only": true
+  }
+}

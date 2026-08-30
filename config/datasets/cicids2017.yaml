@@ -1,0 +1,36 @@
+enabled: false
+raw_dir: data/raw/cicids2017
+output_dir: data
+sample_mode: false
+source_url: https://www.unb.ca/cic/datasets/ids-2017.html
+csv_glob: '**/*.csv'
+label_column_candidates:
+  - Label
+  - label
+  - Class
+timestamp_column_candidates:
+  - Timestamp
+  - timestamp
+id_columns:
+  - Flow ID
+  - Source IP
+  - Destination IP
+drop_columns:
+  - Unnamed: 0
+numeric_feature_policy: coerce_then_median
+categorical_feature_policy: preserve_as_metadata
+missing_value_policy: replace_infinity_then_median
+infinity_policy: replace_with_null
+duplicate_policy: exact_row_only
+label_mapping:
+  BENIGN: benign
+  DDoS: ddos
+  PortScan: reconnaissance
+  Bot: botnet_or_c2_like
+  Infiltration: exfiltration_like
+  Heartbleed: other_attack
+class_sampling_policy: preserve_source_distribution
+split_strategy: capture_grouped_then_chronological_fallback
+seed: 42
+parquet_compression: zstd
+artifact_version: 1.0.0

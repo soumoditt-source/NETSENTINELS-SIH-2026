@@ -1,0 +1,11 @@
+{
+  "title": "NetSentinel · SIH 26145",
+  "description": "Explainable metadata-only cyber early warning for unidirectional IP traffic.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

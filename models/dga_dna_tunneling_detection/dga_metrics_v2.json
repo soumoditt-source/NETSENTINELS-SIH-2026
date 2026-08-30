@@ -1,0 +1,52 @@
+{
+  "model_name": "NetSentinel DGA Detector v2.0",
+  "model_type": "CNN-BiLSTM + Statistical Features (Hybrid)",
+  "version": "2.0.0",
+  "enhancements_over_v1": [
+    "Realistic DNS tunnel generation (iodine/dnscat2/CobaltStrike/dns2tcp)",
+    "Auxiliary statistical features (entropy, bigram, consonant ratio, etc.)",
+    "SHAP explainability for statistical features",
+    "Dual-input ONNX export"
+  ],
+  "architecture": {
+    "branch_a": "CNN-BiLSTM (char-level)",
+    "branch_b": "Dense (7 statistical features)",
+    "embedding_dim": 64,
+    "cnn_filters": 128,
+    "cnn_kernels": [
+      3,
+      4,
+      5
+    ],
+    "lstm_hidden": 64,
+    "lstm_layers": 2,
+    "bidirectional": true,
+    "stat_features": [
+      "Shannon Entropy",
+      "Bigram Score",
+      "Subdomain Count",
+      "Consonant Ratio",
+      "Domain Length",
+      "Digit Ratio",
+      "Max Label Length"
+    ]
+  },
+  "classes": [
+    "Benign",
+    "DGA",
+    "DNS Tunnel"
+  ],
+  "macro_f1": 0.9975413082679788,
+  "best_val_f1": 0.9975413082679788,
+  "training_time_minutes": 24.296704383691154,
+  "epochs": 20,
+  "inference_ms": 1.6486929279999458,
+  "max_domain_length": 128,
+  "vocab_size": 40,
+  "references": [
+    "Woodbridge et al. \"Detecting DGA with LSTMs\" (2016)",
+    "Yu et al. \"Character-level CNN for DGA\" (2018)",
+    "Qi et al. \"Bigram based Real Time DNS Tunnel Detection\"",
+    "Zebin et al. \"Explainable AI-Based IDS for DNS\" (IEEE TIFS 2022)"
+  ]
+}

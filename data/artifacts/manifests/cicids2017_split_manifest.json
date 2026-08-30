@@ -1,0 +1,49 @@
+{
+  "split_version": "1.0.0",
+  "method": "capture_grouped_hash_split",
+  "seed": 42,
+  "groups": {
+    "train": [
+      "monday_workinghours_pcap_iscx",
+      "friday_workinghours_afternoon_ddos_pcap_iscx",
+      "thursday_workinghours_morning_webattacks_pcap_iscx",
+      "wednesday_workinghours_pcap_iscx"
+    ],
+    "validation": [
+      "friday_workinghours_afternoon_portscan_pcap_iscx",
+      "friday_workinghours_morning_pcap_iscx"
+    ],
+    "test": [
+      "tuesday_workinghours_pcap_iscx",
+      "thursday_workinghours_afternoon_infilteration_pcap_iscx"
+    ]
+  },
+  "row_counts": {
+    "train": 120000,
+    "validation": 60000,
+    "test": 60000
+  },
+  "label_distributions": {
+    "train": {
+      "benign": 81060,
+      "ddos": 36749,
+      "unknown": 2180,
+      "other_attack": 11
+    },
+    "validation": {
+      "benign": 43034,
+      "reconnaissance": 15000,
+      "botnet_or_c2_like": 1966
+    },
+    "test": {
+      "benign": 46129,
+      "other_attack": 13835,
+      "exfiltration_like": 36
+    }
+  },
+  "leakage_notes": [
+    "Raw source and destination addresses are anonymized and excluded from model features.",
+    "Capture groups are held out when at least three captures are available.",
+    "A single capture uses chronological ordering and must not be described as a capture holdout."
+  ]
+}
