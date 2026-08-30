@@ -48,6 +48,9 @@ Set-Location "D:\PORT SCANNING CYS IP FLOW\testing-main"
 The complete startup runbook is in `startup.md`; the SIH presentation plan is
 in `ppt.md`.
 
+The engineering and product handoff documents are `technical.md` and
+`comparison.md`.
+
 For provider enrichment, revoke any credentials exposed outside your local
 machine and create `addons/netsentinel_plus/.env.local` using
 `KEY_SETUP.md`. That file is ignored by Git. The sidecar remains fully usable
