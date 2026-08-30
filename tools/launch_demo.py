@@ -37,7 +37,9 @@ def _metric_row(labels, probabilities, threshold: float) -> dict[str, Any]:
 
 def score_prepared_real_data() -> dict[str, Any]:
     """Score all available prepared splits without changing the artifact."""
+    import numpy as np
     import pandas as pd
+    import pyarrow.parquet as parquet
 
     from netsentinel.models.cicids_xgboost import CICIDSXGBoostDetector
 
@@ -54,11 +56,24 @@ def score_prepared_real_data() -> dict[str, Any]:
     split_metrics: dict[str, Any] = {}
     started = time.perf_counter()
     for name, path in split_paths.items():
-        frame = pd.read_parquet(path)
-        x_frame = frame.reindex(columns=detector.feature_order, fill_value=0)
-        transformed = detector.preprocessing.transform(x_frame)
-        probabilities = detector.model.predict_proba(transformed)[:, 1]
-        labels = (frame["canonical_label"] != "benign").astype(int).to_numpy()
+        available_columns = set(parquet.ParquetFile(path).schema.names)
+        if "canonical_label" not in available_columns:
+            return {"status": "not_available", "missing": [f"{path}: canonical_label"]}
+        requested_columns = [
+            column for column in ["canonical_label", *detector.feature_order]
+            if column in available_columns
+        ]
+        labels_parts = []
+        probability_parts = []
+        parquet_file = parquet.ParquetFile(path)
+        for batch in parquet_file.iter_batches(columns=requested_columns, batch_size=20_000):
+            frame = batch.to_pandas()
+            x_frame = frame.reindex(columns=detector.feature_order, fill_value=0).astype("float32")
+            transformed = detector.preprocessing.transform(x_frame)
+            probability_parts.append(detector.model.predict_proba(transformed)[:, 1])
+            labels_parts.append((frame["canonical_label"] != "benign").astype(int).to_numpy())
+        probabilities = np.concatenate(probability_parts)
+        labels = np.concatenate(labels_parts)
         split_metrics[name] = _metric_row(labels, probabilities, detector.threshold)
     return {
         "status": "measured_real_data",

@@ -17,6 +17,7 @@ from urllib.request import Request, urlopen
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 
+from addons.netsentinel_plus.assessment import build_temporal_assessment
 from addons.netsentinel_plus.providers import ProviderService
 
 
@@ -71,6 +72,27 @@ async def addon_lookup(
     return await asyncio.to_thread(providers.lookup, ip=ip, domain=domain, sha256=sha256)
 
 
+@app.get("/api/addon/assessment")
+async def addon_assessment() -> dict[str, Any]:
+    paths = {
+        "health": "/api/health",
+        "alerts": "/api/alerts?limit=100",
+        "temporal": "/api/forensics/temporal",
+        "launch_report": "/api/launch/report",
+    }
+    values = await asyncio.gather(*(asyncio.to_thread(_backend_get, path) for path in paths.values()), return_exceptions=True)
+    live = {name: _proxy_value(value) for name, value in zip(paths, values)}
+    alert_payload = live.get("alerts") or {}
+    alert_items = alert_payload.get("alerts") if isinstance(alert_payload, dict) else []
+    assessment = build_temporal_assessment(
+        telemetry=live.get("temporal"),
+        alerts=alert_items if isinstance(alert_items, list) else [],
+        health=live.get("health"),
+        launch_report=live.get("launch_report"),
+    )
+    return {"assessment": assessment, "source": "existing_backend_metadata", "score_unchanged": True}
+
+
 @app.get("/api/addon/alert/{alert_id}/enrich")
 async def enrich_existing_alert(alert_id: str) -> dict[str, Any]:
     alert = await asyncio.to_thread(_backend_get, f"/api/alerts/{_safe_path_value(alert_id)}")
@@ -117,4 +139,3 @@ def _safe_path_value(value: str) -> str:
     if not value or len(value) > 128 or any(character in value for character in ("/", "\\", "?", "#")):
         raise HTTPException(status_code=400, detail="Invalid alert identifier")
     return value
-

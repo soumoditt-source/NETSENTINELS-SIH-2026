@@ -54,6 +54,29 @@ optional Mistral brief                       = human-readable summary
 External reputation never raises, lowers, or replaces the local confidence.
 The UI and endpoint responses state `score_unchanged: true` for this reason.
 
+## C2 Temporal Convergence
+
+The sidecar's original C2 contribution is Temporal Evidence Convergence (TEC).
+It ranks a case only when independent metadata supports it: the strongest
+existing detector confidence, detector diversity, recurrence in the bounded
+window, and temporal signals such as periodicity, port fan-out, burst ratio,
+and byte asymmetry. TEC is an analyst-prioritization score, not a replacement
+alert confidence and not a claim of malware-detection accuracy.
+
+```text
+triage_score = 100 × (
+  0.45 × signal_strength +
+  0.25 × detector_diversity +
+  0.15 × recurrence +
+  0.15 × temporal_context
+)
+```
+
+The endpoint exposes every factor, observed signal, time window, dataset
+provenance, and safe next step. A single high-confidence detector cannot
+create a high-convergence state by itself. This improves human triage without
+rewriting the original detector score or crossing the read-only boundary.
+
 Mistral receives a compact structured record with raw network identities
 removed from the prompt. Its output is constrained to assessment, evidence,
 and a safe next step. It cannot perform actions in the monitored network.
@@ -75,6 +98,7 @@ and a safe next step. It cannot perform actions in the monitored network.
 | `GET` | `/api/addon/health` | sidecar, backend, and provider state |
 | `GET` | `/api/addon/status` | non-secret configuration state |
 | `GET` | `/api/addon/live` | existing health, alerts, temporal state, and launch report |
+| `GET` | `/api/addon/assessment` | TEC analyst prioritization and evidence provenance |
 | `GET` | `/api/addon/lookup` | validated IOC metadata enrichment |
 | `GET` | `/api/addon/alert/{id}/enrich` | advisory context for an existing alert |
 | `GET` | `/api/addon/alert/{id}/brief` | advisory context plus optional Mistral narrative |
@@ -103,8 +127,9 @@ classifier.
 
 ## Verification evidence
 
-The additive test file covers private-IOC rejection, offline behavior, cache
-reuse, score immutability, and Mistral prompt redaction. Production frontend
-build validation remains part of the repository handoff. Benchmark figures
+The additive tests cover private-IOC rejection, offline behavior, cache reuse,
+score immutability, Mistral prompt redaction, and TEC's empty, single-signal,
+and convergent evidence states. Production frontend build validation remains
+part of the repository handoff. Benchmark figures
 must always be read from the current launch report and must not be copied into
 marketing material as universal accuracy claims.

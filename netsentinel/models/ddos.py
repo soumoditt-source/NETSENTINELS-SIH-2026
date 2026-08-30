@@ -1,4 +1,4 @@
-"""DDoS Detector — XGBoost ONNX Wrapper.
+﻿"""DDoS Detector â€” XGBoost ONNX Wrapper.
 
 Input: 59 flow-level features (from CIC-DDoS2019 feature set)
 Output: {"threat": "DDoS", "confidence": float, "is_attack": bool}
@@ -39,7 +39,7 @@ class DDoSDetector:
         Run DDoS detection on a single flow.
         
         Args:
-            features: dict mapping feature name → float value.
+            features: dict mapping feature name â†’ float value.
                       Missing features are filled with 0.
         
         Returns:
@@ -50,6 +50,15 @@ class DDoSDetector:
             [features.get(name, 0.0) for name in self.feature_names],
             dtype=np.float32
         ).reshape(1, -1)
+
+        if not np.any(np.isfinite(feature_vec) & (np.abs(feature_vec) > 0)):
+            return {
+                "threat": "Benign",
+                "confidence": 0.0,
+                "is_attack": False,
+                "subtype": "Benign",
+                "model": "ddos_binary_xgboost",
+            }
         
         # Run inference
         results = self.session.run(None, {self.input_name: feature_vec})

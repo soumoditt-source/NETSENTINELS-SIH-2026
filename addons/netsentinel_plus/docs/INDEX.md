@@ -21,6 +21,7 @@ The sidecar implementation is intentionally kept separate from documentation:
 |---|---|
 | `../app.py` | FastAPI sidecar routes and read-only proxy to the original API |
 | `../providers.py` | Validated, cache-backed provider and Mistral adapters |
+| `../assessment.py` | C2 Temporal Evidence Convergence triage calculation |
 | `../static/index.html` | Standalone Overview, IOC Lookup, and Alert Review menu |
 | `../../../../launch_netsentinel_all.bat` | Original application plus sidecar orchestration |
 

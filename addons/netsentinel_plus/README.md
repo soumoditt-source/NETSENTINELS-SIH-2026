@@ -8,6 +8,7 @@ and provides a separate analyst menu for optional, metadata-only enrichment.
 - Live read-only snapshot of the existing backend.
 - Public IOC lookup through optional AbuseIPDB, ThreatFox, VirusTotal, and URLhaus credentials.
 - Optional Mistral analyst brief generated from redacted alert evidence.
+- Temporal Evidence Convergence (TEC) that ranks independent signals for review without changing detector scores.
 - Local validation, bounded response sizes, and cache-backed lookups.
 - No executable uploads, sample downloads, payload decryption, callbacks, active probing, or blocking.
 
@@ -71,6 +72,7 @@ Open `http://127.0.0.1:8200`. The existing dashboard remains at
 |---|---|---|
 | `GET` | `/api/addon/health` | Sidecar, backend, and provider status |
 | `GET` | `/api/addon/live` | Existing health, alerts, temporal telemetry, and launch report |
+| `GET` | `/api/addon/assessment` | Explainable temporal convergence and provenance state |
 | `GET` | `/api/addon/lookup?ip=...` | Safe IOC metadata lookup |
 | `GET` | `/api/addon/alert/{id}/enrich` | Enrich one existing alert without changing its score |
 | `GET` | `/api/addon/alert/{id}/brief` | Enrich and optionally generate a Mistral brief |
