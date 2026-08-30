@@ -39,6 +39,10 @@ the terminal before the Plus console starts. The scorecard is read from the
 current launch report and live backend health; it is not a promise of universal
 malware accuracy.
 
+The launcher then runs `tools/verify_final.py`. It stops with a visible failure
+if the launch report, dashboard, backend safety flags, or any expected local
+model/rule component is unavailable.
+
 ## Provider setup
 
 Rotate credentials that have been exposed outside the local machine. Create
