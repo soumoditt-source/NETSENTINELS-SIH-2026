@@ -45,15 +45,15 @@ Set-Location "D:\PORT SCANNING CYS IP FLOW\testing-main"
 .\launch_netsentinel_all.bat
 ```
 
-The complete startup runbook is in `startup.md`; the SIH presentation plan is
-in `ppt.md`.
+The complete startup runbook is in `docs/STARTUP.md`; the SIH presentation plan
+is in `docs/SIH_PRESENTATION.md`.
 
-The engineering and product handoff documents are `technical.md` and
-`comparison.md`.
+The engineering and product handoff documents are `docs/TECHNICAL.md` and
+`docs/COMPARISON.md`. The full document index is `docs/INDEX.md`.
 
 For provider enrichment, revoke any credentials exposed outside your local
 machine and create `addons/netsentinel_plus/.env.local` using
-`KEY_SETUP.md`. That file is ignored by Git. The sidecar remains fully usable
+`docs/KEY_SETUP.md`. That file is ignored by Git. The sidecar remains fully usable
 without provider keys in offline-safe mode.
 
 Open `http://127.0.0.1:8200`. The existing dashboard remains at

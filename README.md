@@ -1,4 +1,4 @@
-# NetSentinel 🛡️
+# NetSentinel | SIH 2026 Passive Network Threat Detection
 
 > **An explainable, metadata-only, streaming cyber-threat intelligence and early-warning platform for unidirectional network monitoring enclaves.**  
 > Built for Smart India Hackathon 2026 — Problem Statement 26145.
@@ -33,6 +33,16 @@ Instead, it correlates **metadata-only** anomalies (using PCAP headers or Zeek J
 
 For the current attack-family boundary and ATT&CK alignment, see
 [`docs/THREAT_COVERAGE_MATRIX.md`](docs/THREAT_COVERAGE_MATRIX.md).
+
+### Additive analyst console
+
+The optional NetSentinel Plus sidecar is self-contained and documented here:
+
+- [`addons/netsentinel_plus/README.md`](addons/netsentinel_plus/README.md) — features, API surface, and launcher usage.
+- [`addons/netsentinel_plus/docs/STARTUP.md`](addons/netsentinel_plus/docs/STARTUP.md) — PowerShell setup and one-command startup.
+- [`addons/netsentinel_plus/docs/TECHNICAL.md`](addons/netsentinel_plus/docs/TECHNICAL.md) — architecture, data contract, and safety boundary.
+- [`addons/netsentinel_plus/docs/SIH_PRESENTATION.md`](addons/netsentinel_plus/docs/SIH_PRESENTATION.md) — judge-facing slide-by-slide presentation.
+- [`addons/netsentinel_plus/docs/COMPARISON.md`](addons/netsentinel_plus/docs/COMPARISON.md) — baseline versus additive capabilities.
 
 ### Key Differentiators
 
