@@ -108,4 +108,3 @@ reuse, score immutability, and Mistral prompt redaction. Production frontend
 build validation remains part of the repository handoff. Benchmark figures
 must always be read from the current launch report and must not be copied into
 marketing material as universal accuracy claims.
-

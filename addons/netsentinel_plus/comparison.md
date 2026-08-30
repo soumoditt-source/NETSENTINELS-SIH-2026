@@ -67,4 +67,3 @@ the optional analyst-enrichment layer. Demonstrate one alert from local
 evidence to advisory context, then show that the score remains unchanged. This
 is a stronger and more defensible story than claiming an external API makes
 the classifier perfect.
-
