@@ -49,7 +49,13 @@ The complete startup runbook is in `docs/STARTUP.md`; the SIH presentation plan
 is in `docs/SIH_PRESENTATION.md`.
 
 The engineering and product handoff documents are `docs/TECHNICAL.md` and
-`docs/COMPARISON.md`. The full document index is `docs/INDEX.md`.
+`docs/COMPARISON.md`. ONNX setup is in `docs/ONNX_ENABLEMENT.md`; the full
+document index is `docs/INDEX.md`.
+
+The unified launcher prints the current measured real-data scorecard and live
+model status before opening the Plus console. It reads values from
+`reports/launch/launch_report.json` and `/api/health`; it does not contain
+hard-coded accuracy.
 
 For provider enrichment, revoke any credentials exposed outside your local
 machine and create `addons/netsentinel_plus/.env.local` using

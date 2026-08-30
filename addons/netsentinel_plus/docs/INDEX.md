@@ -8,6 +8,7 @@ the original NetSentinel application remains unchanged.
 |---|---|
 | [`STARTUP.md`](STARTUP.md) | PowerShell commands, provider setup, launch, judge flow, and stop procedure |
 | [`KEY_SETUP.md`](KEY_SETUP.md) | Local-only credential setup and rotation guidance |
+| [`ONNX_ENABLEMENT.md`](ONNX_ENABLEMENT.md) | Install and verify every local ONNX model |
 | [`TECHNICAL.md`](TECHNICAL.md) | Architecture, API contract, data handling, and failure model |
 | [`COMPARISON.md`](COMPARISON.md) | Original application versus additive sidecar capabilities |
 | [`SIH_PRESENTATION.md`](SIH_PRESENTATION.md) | Full slide-by-slide SIH presentation writing and visual plan |

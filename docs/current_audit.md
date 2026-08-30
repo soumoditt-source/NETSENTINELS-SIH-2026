@@ -29,8 +29,9 @@ Audit scope: repository and live stack inspected on 2026-08-30.
 - Launch audit: complete `449`-event safe bundle and all prepared real-data
   splits scored through `tools/launch_demo.py`; report saved under
   `reports/launch/launch_report.json`.
-- Focused Python suite: `45 passed`, `4 skipped` because optional ONNX runtime
-  artifacts are not installed in this environment.
+- ONNX enablement check: all four ONNX wrappers plus the trusted XGBoost model
+  and seven rule/correlation components loaded successfully (`12/12`) after
+  installing the declared `onnxruntime` dependency.
 - PCAP-specific tests remain dependency-gated until Scapy/Npcap is installed;
   safe JSONL, CSV, and Parquet paths are fully exercised.
 - Frontend production build: passed; the remaining large-chunk warning is from
@@ -44,8 +45,9 @@ Audit scope: repository and live stack inspected on 2026-08-30.
 - Metadata can indicate suspicious behavior but cannot prove malware or intent.
 - Authorized scanners, backups, updates, cloud sync, and automation can look
   suspicious; human and endpoint corroboration are required.
-- Optional legacy ONNX wrappers remain unavailable unless their runtime and
-  verified artifacts are installed; the active real-data artifact is XGBoost.
+- ONNX model loading is verified in the current environment; model availability
+  does not establish cross-dataset or real-world malware accuracy. Independent
+  labeled temporal holdouts are still required for that claim.
 - Live packet capture requires an authorized host, Scapy/Npcap, and interface
   permissions. It is not enabled by safe replay tests.
 

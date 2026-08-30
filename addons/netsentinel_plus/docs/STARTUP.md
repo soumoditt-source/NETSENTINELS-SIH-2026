@@ -22,6 +22,23 @@ Open:
 - Additive analyst console: `http://127.0.0.1:8200`
 - Additive API documentation: `http://127.0.0.1:8200/docs`
 
+## Enable all local models
+
+Before the first launch on a new machine, install the repository dependencies:
+
+```powershell
+Set-Location "D:\PORT SCANNING CYS IP FLOW\testing-main"
+python -m pip install -r requirements.txt
+```
+
+The ONNX verification procedure and expected `12/12` health output are in
+`ONNX_ENABLEMENT.md`.
+
+The same launcher prints the measured train, validation, and test scorecard in
+the terminal before the Plus console starts. The scorecard is read from the
+current launch report and live backend health; it is not a promise of universal
+malware accuracy.
+
 ## Provider setup
 
 Rotate credentials that have been exposed outside the local machine. Create
@@ -83,4 +100,3 @@ NetSentinel is a passive, read-only network-forensics system. The workflow
 accepts metadata and authorized PCAP/Zeek evidence only. It does not accept or
 execute malware, download samples, decrypt payloads, probe live targets, send
 commands, or block traffic.
-

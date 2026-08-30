@@ -69,7 +69,7 @@ flowchart LR
   ingest --> normalize["NormalizedEvent contract"]
   normalize --> features["Flow, DNS, TLS/QUIC metadata features"]
   features --> state["Bounded temporal state - 300 s window"]
-  state --> detectors["Rules + local ML - XGBoost / optional ONNX"]
+   state --> detectors["Rules + local ML - XGBoost / ONNX"]
   detectors --> correlate["Evidence correlation - confidence + benign alternatives"]
   correlate --> alert["Versioned alert schema - read_only=true"]
   alert --> api["FastAPI REST + WebSocket"]
@@ -83,7 +83,7 @@ flowchart LR
 2. Adapters validate and normalize each event without sending traffic back.
 3. Temporal state aggregates bounded windows for fan-out, timing, entropy, and
    byte asymmetry signals.
-4. Rules, the verified local XGBoost artifact, and optional ONNX wrappers emit
+4. Rules, the verified local XGBoost artifact, and ONNX wrappers emit
    evidence; correlation reduces single-field guesses.
 5. FastAPI publishes versioned alerts to the dashboard and writes launch
    metrics that can be audited separately from live telemetry.
@@ -188,8 +188,8 @@ python run.py
 
 Backend starts on `http://localhost:8100`. On startup it will not download
 models, datasets, or threat feeds. It loads repository-local artifacts when
-optional ONNX dependencies and files are available, always loads the rule
-detectors, and starts the dormant replay loop.
+the declared dependencies and files are available, including the four ONNX
+wrappers, always loads the rule detectors, and starts the dormant replay loop.
 
 Launch the command-center dashboard in a second terminal:
 
@@ -228,7 +228,7 @@ curl http://localhost:8100/api/metrics
 # Read the latest launch audit used by the dashboard
 curl http://localhost:8100/api/launch/report
 
-# Health check — confirms all 8 components loaded
+# Health check — confirms model and detector status
 curl http://localhost:8100/api/health
 ```
 

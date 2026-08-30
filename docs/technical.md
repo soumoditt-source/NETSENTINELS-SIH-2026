@@ -152,9 +152,11 @@ cd frontend
 npm run build
 ```
 
-The focused suite currently passes with four optional ONNX tests skipped when
-`onnxruntime` is not installed. PCAP-specific tests also require Scapy and an
-authorized capture fixture.
+The current environment loads all four ONNX wrappers plus the trusted local
+XGBoost artifact and rule detectors (`12/12` registry components). The
+ONNX-specific verification command is documented in
+`addons/netsentinel_plus/docs/ONNX_ENABLEMENT.md`. PCAP-specific tests also
+require Scapy and an authorized capture fixture.
 
 ## 9. Security boundary
 

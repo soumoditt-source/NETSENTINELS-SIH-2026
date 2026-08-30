@@ -14,6 +14,9 @@ if errorlevel 1 (
   exit /b 1
 )
 
+python "%~dp0addons\netsentinel_plus\launch_summary.py"
+if errorlevel 1 echo [NetSentinel] Scorecard summary could not be rendered; services can still be inspected manually.
+
 echo [NetSentinel Plus] Checking additive console on http://127.0.0.1:8200 ...
 curl.exe --silent --fail --max-time 2 http://127.0.0.1:8200/api/addon/status >nul 2>&1
 if errorlevel 1 (
