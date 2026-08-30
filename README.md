@@ -8,6 +8,10 @@
 [![ONNX](https://img.shields.io/badge/ONNX-Runtime-orange.svg)](https://onnxruntime.ai/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+**Submission:** Smart India Hackathon 2026 | PS 26145<br>
+**Team:** Soumdoitya Das and Team NetSentinels<br>
+**Operating principle:** See everything. Touch nothing. Trust the chain.
+
 ---
 
 ## 🎯 The NetSentinel Philosophy
@@ -17,6 +21,10 @@ It does **not** block traffic, does **not** fetch live malware, and does **not**
 Instead, it correlates **metadata-only** anomalies (using PCAP headers or Zeek JSON logs) to provide explainable defensive intelligence.
 
 ## Judge and operator documents
+
+- [`docs/technical.md`](docs/technical.md) - end-to-end technical design, data contracts, and operations.
+- [`docs/PPT.md`](docs/PPT.md) - presentation-ready slide narrative and demo sequence.
+- [`docs/previous-vs-current.md`](docs/previous-vs-current.md) - honest comparison with the earlier GitHub baseline.
 
 - [`docs/TECHNICAL_DEFENSE_BLUEPRINT.md`](docs/TECHNICAL_DEFENSE_BLUEPRINT.md) — architecture, features, governance, and throughput.
 - [`docs/RED_BLUE_TESTING.md`](docs/RED_BLUE_TESTING.md) — safe adversary emulation and blue-team validation runbook.
@@ -37,7 +45,40 @@ For the current attack-family boundary and ATT&CK alignment, see
 
 ---
 
-## 🏗️ Architecture
+## System architecture (Eraser-ready)
+
+The diagram uses explicit system boxes and one-way arrows. It can be pasted
+into Eraser or rendered directly by GitHub as Mermaid.
+
+```mermaid
+flowchart LR
+  tap["One-way tap / data diode"] --> ingest["Read-only ingest"]
+  pcap["PCAP headers"] --> ingest
+  zeek["Zeek flow and DNS JSON"] --> ingest
+  replay["Safe lab replay"] --> ingest
+  ingest --> normalize["NormalizedEvent contract"]
+  normalize --> features["Flow, DNS, TLS/QUIC metadata features"]
+  features --> state["Bounded temporal state - 300 s window"]
+  state --> detectors["Rules + local ML - XGBoost / optional ONNX"]
+  detectors --> correlate["Evidence correlation - confidence + benign alternatives"]
+  correlate --> alert["Versioned alert schema - read_only=true"]
+  alert --> api["FastAPI REST + WebSocket"]
+  api --> dashboard["React command-center dashboard"]
+  api --> report["Launch audit - metrics + provenance"]
+```
+
+### Runtime flow
+
+1. A data diode, PCAP file, Zeek record, or safe replay provides metadata.
+2. Adapters validate and normalize each event without sending traffic back.
+3. Temporal state aggregates bounded windows for fan-out, timing, entropy, and
+   byte asymmetry signals.
+4. Rules, the verified local XGBoost artifact, and optional ONNX wrappers emit
+   evidence; correlation reduces single-field guesses.
+5. FastAPI publishes versioned alerts to the dashboard and writes launch
+   metrics that can be audited separately from live telemetry.
+
+## Component map (text fallback)
 
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
@@ -108,6 +149,18 @@ starts the backend on `8100` and dashboard on `5174`.
 The judge-ready branch includes the prepared 78-feature evaluation splits, the
 verified local XGBoost artifact, and the safe metadata fixture bundle. Raw
 captures and raw datasets remain local-only and are never fetched at startup.
+
+### Stop the local stack
+
+From the same repository root, run this in PowerShell:
+
+```powershell
+Get-NetTCPConnection -LocalPort 8100,5174 -State Listen -ErrorAction SilentlyContinue |
+  ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+```
+
+The launcher is intentionally repeatable: it scores first, reuses healthy
+services when present, and does not silently substitute invented telemetry.
 
 ### Prerequisites
 
