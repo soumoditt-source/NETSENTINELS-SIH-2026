@@ -1,0 +1,2 @@
+"""NetSentinel Plus sidecar console."""
+

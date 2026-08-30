@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NetSentinel Plus</title>
+    <style>
+      :root { color-scheme: dark; --bg: #07101d; --panel: #0d1a2b; --line: #20334b; --text: #e8f0fa; --muted: #91a5bd; --cyan: #54e6ff; --green: #55e6a5; --amber: #ffbf69; --red: #ff6e7d; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: radial-gradient(circle at 20% 0%, #102b43 0, transparent 35%), var(--bg); color: var(--text); font: 14px/1.5 Inter, ui-sans-serif, system-ui, sans-serif; }
+      main { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+      header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 20px 0 26px; border-bottom: 1px solid var(--line); }
+      h1, h2, p { margin: 0; } h1 { letter-spacing: -.03em; font-size: 28px; } h2 { font-size: 15px; margin-bottom: 12px; } .eyebrow { color: var(--cyan); font: 11px ui-monospace, SFMono-Regular, Consolas, monospace; text-transform: uppercase; letter-spacing: .14em; } .muted { color: var(--muted); }
+      .badge { border: 1px solid #2b896d; background: #0b3129; color: var(--green); padding: 6px 10px; border-radius: 999px; white-space: nowrap; font: 11px ui-monospace, monospace; }
+      nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; } button { border: 1px solid #2b4664; background: #13253b; color: var(--text); padding: 9px 13px; border-radius: 8px; cursor: pointer; } button:hover { border-color: var(--cyan); } button.primary { background: #0d6070; border-color: var(--cyan); }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } .wide { grid-column: span 2; } .panel { background: color-mix(in srgb, var(--panel) 92%, transparent); border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 16px 40px #0003; } .metric { font-size: 25px; font-weight: 700; } .ok { color: var(--green); } .warn { color: var(--amber); } .danger { color: var(--red); }
+      label { display: block; color: var(--muted); font: 11px ui-monospace, monospace; margin: 10px 0 5px; } input { width: 100%; border: 1px solid var(--line); background: #081321; color: var(--text); border-radius: 7px; padding: 10px; outline: none; } input:focus { border-color: var(--cyan); } .actions { display: flex; gap: 8px; margin-top: 13px; flex-wrap: wrap; }
+      pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #07111e; border: 1px solid #172940; border-radius: 8px; padding: 12px; max-height: 420px; overflow: auto; color: #cfe0f4; font: 12px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; } .alert { display:flex; align-items:center; justify-content:space-between; gap:10px; border-top: 1px solid var(--line); padding: 10px 0; } .alert:first-child { border-top: 0; } .alert small { display:block; color:var(--muted); }
+      .hidden { display: none; } @media (max-width: 820px) { header { display:block; } .badge { display:inline-block; margin-top:14px; } .grid { grid-template-columns: 1fr; } .wide { grid-column: auto; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header><div><div class="eyebrow">Additive analyst console · read-only</div><h1>NetSentinel Plus</h1><p class="muted">Evidence enrichment over the existing local detector. No score changes. No payloads.</p></div><div id="mode" class="badge">SIDECAR STARTING</div></header>
+      <nav><button class="primary" data-tab="overview">Overview</button><button data-tab="lookup">IOC lookup</button><button data-tab="alerts">Alert review</button></nav>
+      <section id="overview" class="tab grid">
+        <div class="panel"><h2>Sidecar status</h2><div id="sidecar" class="metric">—</div><p class="muted">New service port 8200</p></div>
+        <div class="panel"><h2>Existing backend</h2><div id="backend" class="metric">—</div><p class="muted">Read-only connection to port 8100</p></div>
+        <div class="panel"><h2>Configured providers</h2><div id="provider-count" class="metric">—</div><p class="muted">Keys never shown</p></div>
+        <div class="panel wide"><h2>Live telemetry snapshot</h2><pre id="telemetry">Loading…</pre></div>
+        <div class="panel"><h2>Safety contract</h2><p class="ok">Metadata only</p><p class="muted">No uploads · no downloads · no execution · no blocking</p></div>
+      </section>
+      <section id="lookup" class="tab grid hidden">
+        <div class="panel wide"><h2>Reputation lookup</h2><p class="muted">Use an authorized public IOC. Private addresses are rejected locally.</p><label for="ip">PUBLIC IP</label><input id="ip" placeholder="203.0.113.10" /><label for="domain">DOMAIN</label><input id="domain" placeholder="example.org" /><label for="sha256">SHA-256 (metadata lookup only)</label><input id="sha256" placeholder="64-character digest" /><div class="actions"><button class="primary" id="lookup-btn">Run lookup</button><button id="clear-btn">Clear</button></div></div>
+        <div class="panel wide"><h2>Provider evidence</h2><pre id="lookup-output">No lookup requested.</pre></div>
+      </section>
+      <section id="alerts" class="tab grid hidden">
+        <div class="panel wide"><h2>Recent alerts from existing NetSentinel</h2><div id="alert-list" class="muted">Loading…</div></div>
+        <div class="panel wide"><h2>Analyst output</h2><pre id="alert-output">Select enrich or brief on an alert.</pre></div>
+      </section>
+    </main>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const json = (value) => JSON.stringify(value, null, 2);
+      document.querySelectorAll("nav button").forEach((button) => button.addEventListener("click", () => { document.querySelectorAll(".tab").forEach((tab) => tab.classList.add("hidden")); $(button.dataset.tab).classList.remove("hidden"); document.querySelectorAll("nav button").forEach((item) => item.classList.remove("primary")); button.classList.add("primary"); if (button.dataset.tab === "alerts") loadAlerts(); }));
+      async function get(path) { const response = await fetch(path); const value = await response.json(); if (!response.ok) throw new Error(value.detail || "Request failed"); return value; }
+      async function loadOverview() { try { const value = await get("/api/addon/health"); $("mode").textContent = "SIDE CAR ONLINE"; $("sidecar").textContent = "ONLINE"; $("sidecar").className = "metric ok"; const backend = value.backend?.status === "online"; $("backend").textContent = backend ? "ONLINE" : "OFFLINE"; $("backend").className = backend ? "metric ok" : "metric warn"; $("provider-count").textContent = value.providers.active_provider_count + " / 5"; const live = await get("/api/addon/live"); $("telemetry").textContent = json({ health: live.health, temporal: live.temporal, launch_report: live.launch_report }); } catch (error) { $("mode").textContent = "BACKEND OFFLINE"; $("sidecar").textContent = "ONLINE"; $("backend").textContent = "OFFLINE"; $("telemetry").textContent = error.message; } }
+      async function loadAlerts() { const host = $("alert-list"); try { const value = await get("/api/addon/live"); const alerts = value.alerts?.alerts || []; if (!alerts.length) { host.textContent = "No alerts available from the existing backend."; return; } host.innerHTML = alerts.map((alert) => `<div class="alert"><div><strong>${alert.threat_class || "Unknown"}</strong><small>${alert.severity || ""} · ${Math.round((alert.confidence || 0) * 100)}% · ${alert.alert_id || alert.id}</small></div><div><button data-action="enrich" data-id="${alert.alert_id || alert.id}">Enrich</button> <button data-action="brief" data-id="${alert.alert_id || alert.id}">Brief</button></div></div>`).join(""); host.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => reviewAlert(button.dataset.action, button.dataset.id))); } catch (error) { host.textContent = error.message; } }
+      async function reviewAlert(action, id) { $("alert-output").textContent = "Working…"; try { const value = await get(`/api/addon/alert/${encodeURIComponent(id)}/${action}`); $("alert-output").textContent = json(value); } catch (error) { $("alert-output").textContent = error.message; } }
+      $("lookup-btn").addEventListener("click", async () => { $("lookup-output").textContent = "Working…"; const query = new URLSearchParams(); ["ip", "domain", "sha256"].forEach((id) => { if ($(id).value.trim()) query.set(id, $(id).value.trim()); }); try { $("lookup-output").textContent = json(await get(`/api/addon/lookup?${query}`)); } catch (error) { $("lookup-output").textContent = error.message; } });
+      $("clear-btn").addEventListener("click", () => ["ip", "domain", "sha256"].forEach((id) => $(id).value = ""));
+      loadOverview();
+    </script>
+  </body>
+</html>
