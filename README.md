@@ -167,6 +167,8 @@ flowchart LR
   availability are printed by `tools/verify_final.py`.
 - **Memory-safe audit:** prepared parquet splits are scored in bounded batches;
   the launch audit does not materialize the full dataset matrix at once.
+  The default scoring batch is 5,000 rows; constrained machines can lower it
+  with `NETSENTINEL_SCORE_BATCH_SIZE`.
 
 ## 8. Three-layer product design
 

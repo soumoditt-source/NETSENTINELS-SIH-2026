@@ -9,6 +9,8 @@ and writes one report consumed by the dashboard.
 from __future__ import annotations
 
 import json
+import gc
+import os
 import sys
 import time
 from pathlib import Path
@@ -66,12 +68,15 @@ def score_prepared_real_data() -> dict[str, Any]:
         labels_parts = []
         probability_parts = []
         parquet_file = parquet.ParquetFile(path)
-        for batch in parquet_file.iter_batches(columns=requested_columns, batch_size=20_000):
+        batch_size = max(1, int(os.environ.get("NETSENTINEL_SCORE_BATCH_SIZE", "5000")))
+        for batch in parquet_file.iter_batches(columns=requested_columns, batch_size=batch_size):
             frame = batch.to_pandas()
             x_frame = frame.reindex(columns=detector.feature_order, fill_value=0).astype("float32")
             transformed = detector.preprocessing.transform(x_frame)
             probability_parts.append(detector.model.predict_proba(transformed)[:, 1])
             labels_parts.append((frame["canonical_label"] != "benign").astype(int).to_numpy())
+            del transformed, x_frame, frame, batch
+            gc.collect()
         probabilities = np.concatenate(probability_parts)
         labels = np.concatenate(labels_parts)
         split_metrics[name] = _metric_row(labels, probabilities, detector.threshold)

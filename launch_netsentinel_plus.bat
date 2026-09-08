@@ -16,5 +16,16 @@ echo   Existing app: 8100   Sidecar: 8200
 echo   Metadata only - no payloads, downloads, execution, or blocking
 echo ============================================================
 echo.
+echo [NetSentinel Plus] Checking existing sidecar on http://127.0.0.1:8200 ...
+curl.exe --silent --fail --max-time 2 http://127.0.0.1:8200/api/addon/status >nul 2>&1
+if not errorlevel 1 (
+  echo [NetSentinel Plus] Sidecar already running; reusing it.
+  endlocal
+  exit /b 0
+)
+
+echo [NetSentinel Plus] Starting sidecar on http://127.0.0.1:8200 ...
 python -m uvicorn addons.netsentinel_plus.app:app --host 127.0.0.1 --port %NETSENTINEL_PLUS_PORT%
+set "SIDECAR_EXIT=%ERRORLEVEL%"
 endlocal
+exit /b %SIDECAR_EXIT%

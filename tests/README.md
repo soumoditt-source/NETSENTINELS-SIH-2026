@@ -2,6 +2,13 @@
 
 This directory contains test scripts for validating the NetSentinel detection pipeline and UI components.
 
+## Test layout
+
+The pytest suite contains deterministic unit, integration, artifact, and
+safe-replay checks. `test_advanced.py` is retained as a manual, server-backed
+validation script and is intentionally excluded from pytest collection; run
+it directly only when the legacy port-8000 service is available.
+
 ---
 
 ## Quick Start

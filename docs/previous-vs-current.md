@@ -38,7 +38,7 @@ reproducible launch report.
 - CIC-IDS2017 test recall: `57.54%`.
 - CIC-IDS2017 test F1: `63.59%`.
 - CIC-IDS2017 test ROC-AUC: `90.55%`.
-- Safe 449-event replay F1: `71.09%`; safe replay precision: `100%`.
+- Safe 449-event replay F1: `73.49%`; safe replay precision: `100%`.
 
 These values are not forced to 90% or 100%. A reliable submission shows where
 the model works, where it misses, and what additional endpoint or asset context
