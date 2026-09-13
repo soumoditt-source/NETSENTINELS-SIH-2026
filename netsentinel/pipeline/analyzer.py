@@ -252,12 +252,16 @@ class FlowAnalyzer:
             features = event.get("features", {})
             src = event.get("source_ip", "unknown")
             state = self.state_manager.host_state[src]
+            if not state["first_seen"]:
+                state["first_seen"] = float(event.get("observed_at", __import__("time").time()))
             dst = event.get("dest_ip", "")
             port = features.get("Destination Port", 0)
             if dst:
                 state["destinations"].add(dst)
             if port:
                 state["ports"].add(port)
+            if dst and port:
+                state["destination_port_pairs"].add((dst, port))
             bytes_val = features.get("Total Fwd Packets", 0) * 1500
             state["bytes_out"] += bytes_val
             state["flows"] += 1

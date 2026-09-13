@@ -18,6 +18,7 @@ import DataEvidencePanel from "./components/DataEvidencePanel";
 import TemporalForensicsPanel from "./components/TemporalForensicsPanel";
 import LaunchTelemetryPanel from "./components/LaunchTelemetryPanel";
 import ThreatCoveragePanel from "./components/ThreatCoveragePanel";
+import PortScanEvidencePanel from "./components/PortScanEvidencePanel";
 
 export default function App() {
   const feed = useThreatFeed();
@@ -83,6 +84,10 @@ export default function App() {
 
         <div className="animate-entrance stagger-6">
           <ThreatCoveragePanel />
+        </div>
+
+        <div className="animate-entrance stagger-6">
+          <PortScanEvidencePanel alerts={feed.alerts} temporal={feed.temporal} />
         </div>
 
         {/* Attack story: rolling swimlane */}
